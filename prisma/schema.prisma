@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  plan         String    @default("free")
+  createdAt    DateTime  @default(now())
+  lastActiveAt DateTime  @default(now())
+  listings     Listing[]
+  interactions Interaction[]
+}
+
+model Listing {
+  id         String    @id @default(cuid())
+  owner      User      @relation(fields: [ownerId], references: [id])
+  ownerId    String
+  title      String
+  description String?
+  price      Int
+  photos     String[]  @default([])
+  visits     Int       @default(0)
+  reservations Int     @default(0)
+  createdAt  DateTime  @default(now())
+  interactions Interaction[]
+}
+
+model Interaction {
+  id        String   @id @default(cuid())
+  type      String
+  payload   Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  listing   Listing? @relation(fields: [listingId], references: [id])
+  listingId String?
+}
