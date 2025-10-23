@@ -12,13 +12,17 @@ export class UserService {
   }
 
   async getUsers(page = 0, total = 10) {
-    return await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       skip: total * page || 0,
       take: Number(total) || 10,
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    const count = await prisma.user.count();
+
+    return { users, count };
   }
 
   async getUserById(id) {

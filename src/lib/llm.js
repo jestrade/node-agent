@@ -1,9 +1,9 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from "@google/genai";
 import { config } from "../config/index.js";
 
 const GEMINI_API_KEY = config.llm.gemini.apiKey;
 
-const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 export async function generateMessage({ purpose, context }) {
   const systemPrompt = `
@@ -33,17 +33,17 @@ export async function generateMessage({ purpose, context }) {
 
     const text = result.text;
 
-    const jsonString = text.replace(/```json\s*|\s*```/g, '').trim();
+    const jsonString = text.replace(/```json\s*|\s*```/g, "").trim();
     const data = JSON.parse(jsonString);
 
     return data;
   } catch (error) {
     console.error("❌ Error generating message with Gemini:", error);
-    
-    return { 
-      subject: "Important Update", 
-      body: "We have an important update regarding our services. Please check your account for more details.", 
-      cta: "View" 
+
+    return {
+      subject: "Important Update",
+      body: "We have an important update regarding our services. Please check your account for more details.",
+      cta: "View",
     };
   }
 }
