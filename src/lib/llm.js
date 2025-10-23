@@ -1,22 +1,22 @@
 import OpenAI from "openai";
 import { config } from "../config/index.js";
 
-const client = new OpenAI({ apiKey: config.llm.apiKey });
+const client = new OpenAI({ apiKey: config.llm.openAi.apiKey });
 
 export async function generateMessage({ purpose, context }) {
   const system = `You are a concise, persuasive, and helpful assistant. Write short messages in English with a professional yet friendly tone.`;
   const userPrompt = `
-Objective: ${purpose}
-Context: ${JSON.stringify(context || {})}
+                        Objective: ${purpose}
+                        Context: ${JSON.stringify(context || {})}
 
-Write:
-- Subject line (maximum 8 words)
-- Message body of 1-3 lines (max 200 characters)
-- Short CTA at the end (e.g., "Publish now", "View suggestion")
-Return in JSON format with keys: subject, body, cta.
-`;
+                        Write:
+                        - Subject line (maximum 8 words)
+                        - Message body of 1-3 lines (max 200 characters)
+                        - Short CTA at the end (e.g., "Publish now", "View suggestion")
+                        Return in JSON format with keys: subject, body, cta.
+                      `;
   const resp = await client.responses.create({
-    model: "gpt-4-mini", // or whichever model you use in your account
+    model: config.llm.openAi.model,
     input: [
       { role: "system", content: system },
       { role: "user", content: userPrompt }

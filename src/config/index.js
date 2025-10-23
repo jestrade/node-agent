@@ -14,8 +14,14 @@ export const config = {
         port: Number(process.env.HTTP_PORT) || 3000,
     },
     llm: {
-        apiKey: process.env.OPENAI_API_KEY,
-        model: process.env.LLM_MODEL || 'gpt-4o-mini',
+        openAi : {
+            apiKey: process.env.OPENAI_API_KEY,
+            model: process.env.OPENAI_MODEL
+        },
+        gemini: {
+            apiKey: process.env.GEMINI_API_KEY,
+            model: process.env.GEMINI_MODEL
+        }
     },
 }
 

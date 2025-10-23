@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import {config } from './index.js';
+import { config } from './index.js';
 
 const mailerOptions = {
   service: 'gmail',
