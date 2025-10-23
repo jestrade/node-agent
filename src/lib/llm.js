@@ -1,39 +1,48 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from '@google/genai';
 import { config } from "../config/index.js";
 
-const client = new OpenAI({ apiKey: config.llm.openAi.apiKey });
+const GEMINI_API_KEY = config.llm.gemini.apiKey;
+
+const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
 
 export async function generateMessage({ purpose, context }) {
-  const system = `You are a concise, persuasive, and helpful assistant. Write short messages in English with a professional yet friendly tone.`;
+  const systemPrompt = `
+        You are a concise, persuasive, and helpful marketing copy assistant.
+        Always return a JSON object in this exact format:
+        {
+          "subject": "string",
+          "body": "string",
+          "cta": "string"
+        }
+
+        Guidelines:
+        - Write short, natural, and professional English.
+        - Use a friendly but confident tone.
+        - Avoid long introductions or redundant phrases.
+          `;
   const userPrompt = `
-                        Objective: ${purpose}
-                        Context: ${JSON.stringify(context || {})}
+    Objective: ${purpose}
+    Context: ${JSON.stringify(context, null, 2)}
+    `;
 
-                        Write:
-                        - Subject line (maximum 8 words)
-                        - Message body of 1-3 lines (max 200 characters)
-                        - Short CTA at the end (e.g., "Publish now", "View suggestion")
-                        Return in JSON format with keys: subject, body, cta.
-                      `;
-  const resp = await client.responses.create({
-    model: config.llm.openAi.model,
-    input: [
-      { role: "system", content: system },
-      { role: "user", content: userPrompt }
-    ],
-    max_output_tokens: 300,
-  });
-
-  const text = resp.output_text ?? resp.output?.[0]?.content?.[0]?.text ?? String(resp);
- 
   try {
-    const jsonStart = text.indexOf("{");
-    const json = JSON.parse(text.slice(jsonStart));
-    return json;
-  } catch (e) {
+    const result = await ai.models.generateContent({
+      model: config.llm.gemini.model,
+      contents: [systemPrompt, userPrompt],
+    });
+
+    const text = result.text;
+
+    const jsonString = text.replace(/```json\s*|\s*```/g, '').trim();
+    const data = JSON.parse(jsonString);
+
+    return data;
+  } catch (error) {
+    console.error("❌ Error generating message with Gemini:", error);
+    
     return { 
-      subject: text.split("\n")[0].slice(0, 60), 
-      body: text.slice(0, 200), 
+      subject: "Important Update", 
+      body: "We have an important update regarding our services. Please check your account for more details.", 
       cta: "View" 
     };
   }

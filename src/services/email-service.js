@@ -1,6 +1,7 @@
-import { transporter } from '../config/mailer.js';
-import { prisma } from '../models/prisma.js';
-import { config } from '../config/index.js';
+import { transporter } from "../config/mailer.js";
+import { prisma } from "../models/prisma.js";
+import { config } from "../config/index.js";
+import InteractionService from "./interaction-service.js";
 
 export async function sendEmail(to, subject, body) {
   try {
@@ -11,14 +12,14 @@ export async function sendEmail(to, subject, body) {
       text: body,
       html: `<p>${body}</p>`,
     });
+
+    const interactionService = new InteractionService();
+    await interactionService.createInteraction("email_sent", {
+      to,
+      subject,
+      body,
+    });
   } catch (err) {
     console.error(err);
   }
-  await prisma.interaction.create({ 
-    data: { 
-      type: "email_sent", 
-      payload: { subject, body }, 
-      user: { connect: { email: to } } 
-    } 
-  }).catch(()=>{});
 }
