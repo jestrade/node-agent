@@ -1,16 +1,14 @@
 import nodemailer from 'nodemailer';
-import dotenv from "dotenv";
-
-dotenv.config();
+import {config } from './index.js';
 
 const mailerOptions = {
   service: 'gmail',
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
+  host: config.email.host,
+  port: Number(config.email.port),
   secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: config.email.user,
+    pass: config.email.password,
   },
 };
 

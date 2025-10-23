@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { prisma } from '../models/prisma.js';
-import { sendEmail } from './email.js';
+import { sendEmail } from './email-service.js';
 import { generateMessage } from '../lib/llm.js';
 
 export function initializeScheduler() {

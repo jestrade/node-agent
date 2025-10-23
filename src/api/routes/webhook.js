@@ -1,7 +1,7 @@
 import express from 'express';
-import { prisma } from '../models/prisma.js';
-import { sendEmail } from '../services/email.js';
-import { generateMessage } from '../lib/llm.js';
+import { prisma } from '../../models/prisma.js';
+import { sendEmail } from '../../services/email-service.js';
+import { generateMessage } from '../../lib/llm.js';
 
 const router = express.Router();
 

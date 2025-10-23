@@ -1,10 +1,11 @@
 import { transporter } from '../config/mailer.js';
 import { prisma } from '../models/prisma.js';
+import { config } from '../config/index.js';
 
 export async function sendEmail(to, subject, body) {
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+      from: config.email.emailFrom,
       to,
       subject,
       text: body,

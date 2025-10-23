@@ -1,9 +1,8 @@
-// lib/llm.js
 import OpenAI from "openai";
-import dotenv from "dotenv";
 
-dotenv.config();
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { config } from "../config/index.js";
+
+const client = new OpenAI({ apiKey: config.llm.apiKey });
 
 export async function generateMessage({ purpose, context }) {
   const system = `Eres un asistente conciso, persuasivo, y útil. Escribe mensajes cortos en español, tono profesional cercano.`;
