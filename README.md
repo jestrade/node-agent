@@ -1,104 +1,171 @@
-# Node Agent
+# Node Agent - Real Estate Automation System
 
-A Node.js application that manages real estate listings with automated user engagement features.
+A Node.js microservice for automating real estate listing management and user engagement through intelligent email communications.
 
-## Features
+## 🚀 Features
 
-- User management with engagement tracking
-- Property listing creation and management
-- Automated email notifications
-- Smart pricing suggestions based on listing performance
-- Webhook integration for events
-- Scheduled tasks for user re-engagement
+- **Automated Email System**
+  - Transactional emails via Gmail SMTP
+  - HTML and plain text support
+  - Email tracking and logging
+  
+- **User Management**
+  - User creation and tracking
+  - Activity monitoring
+  - Engagement metrics
+  
+- **Listing Management**
+  - Property listing creation
+  - Visit tracking
+  - Automated suggestions based on performance
+  
+- **Intelligent Automation**
+  - AI-powered message generation
+  - Smart pricing recommendations
+  - Engagement-based upgrade suggestions
 
-## Tech Stack
+## 🛠 Tech Stack
 
-- Node.js
-- Express
-- Prisma ORM
+- **Backend**: Node.js, Express
+- **Database**: PostgreSQL with Prisma ORM
+- **Email**: Nodemailer with Gmail
+- **Scheduling**: node-cron
+- **AI**: OpenAI API integration
+- **Type Safety**: TypeScript
+
+## 📋 Prerequisites
+
+- Node.js (v16+)
 - PostgreSQL
-- OpenAI API
-- Node Mailer
-- Node Cron
-
-## Prerequisites
-
-- Node.js (v16 or higher)
-- PostgreSQL
+- Gmail account
 - OpenAI API key
-- Gmail account for email notifications
 
-## Installation
+## 🔧 Installation
 
-1. Clone the repository
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/node-agent.git
+cd node-agent
+```
+
 2. Install dependencies:
-```sh
+```bash
 npm install
 ```
 
-3. Create a `.env` file with the following variables:
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
+
+4. Configure your `.env` file:
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
-OPENAI_API_KEY="your-api-key"
-EMAIL_FROM="your@email.com"
-EMAIL_USER="your@email.com"
-EMAIL_PASSWORD="your-password"
+OPENAI_API_KEY="your-openai-api-key"
+EMAIL_FROM="your@gmail.com"
+EMAIL_USER="your@gmail.com"
+EMAIL_PASSWORD="your-app-specific-password"
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_PORT=465
-HTTP_PORT=4000
+PORT=4000
 ```
 
-4. Run Prisma migrations:
-```sh
-npm run prisma migrate dev
+5. Initialize the database:
+```bash
+npx prisma generate
+npx prisma db push
 ```
 
-## Usage
+## 🚦 Usage
 
-Start the server:
-```sh
+Start the development server:
+```bash
+npm run dev
+```
+
+Start in production:
+```bash
 npm start
 ```
 
-The server will start on the port specified in your `.env` file.
+## 📡 API Endpoints
 
-## API Endpoints
+### Webhooks
 
-### POST /webhook
-Handles various events:
-- `user.created`: Creates new user and sends welcome email
-- `listing.created`: Creates new listing and suggests improvements
-- `listing.view`: Tracks listing views and suggests upgrades
+POST `/webhook`
+- Handles various system events
+- Payload: `{ type: string, payload: object }`
 
-## Database Schema
+Supported event types:
+- `user.created`
+- `listing.created`
+- `listing.view`
 
-### User
-- id: String (Primary Key)
-- email: String (Unique)
-- name: String?
-- plan: String
-- createdAt: DateTime
-- lastActiveAt: DateTime
+## 📁 Project Structure
 
-### Listing
-- id: String (Primary Key)
-- ownerId: String (Foreign Key)
-- title: String
-- description: String?
-- price: Integer
-- photos: String[]
-- visits: Integer
-- reservations: Integer
-- createdAt: DateTime
+```
+src/
+├── config/
+│   ├── index.js
+│   └── mailer.js
+├── models/
+│   └── prisma.js
+├── routes/
+│   └── webhook.js
+├── services/
+│   ├── email-service.js
+│   └── scheduler.js
+└── index.js
+```
 
-### Interaction
-- id: String (Primary Key)
-- type: String
-- payload: Json?
-- userId: String? (Foreign Key)
-- listingId: String? (Foreign Key)
-- createdAt: DateTime
+## 📊 Database Schema
 
-## License
+```prisma
+model User {
+  id           String
+  email        String
+  name         String?
+  plan         String
+  lastActiveAt DateTime
+  // ...
+}
 
-ISC
+model Listing {
+  id          String
+  title       String
+  price       Int
+  visits      Int
+  // ...
+}
+
+model Interaction {
+  id        String
+  type      String
+  payload   Json?
+  // ...
+}
+```
+
+## 🔍 Monitoring
+
+The system logs:
+- Email sending attempts
+- User interactions
+- Listing performance
+- System errors
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the ISC License.
+
+## 🆘 Support
+
+For support, email support@yourdomain.com or create an issue in the repository.
