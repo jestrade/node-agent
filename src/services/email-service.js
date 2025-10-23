@@ -1,5 +1,4 @@
 import { transporter } from "../config/mailer.js";
-import { prisma } from "../models/prisma.js";
 import { config } from "../config/index.js";
 import InteractionService from "./interaction-service.js";
 

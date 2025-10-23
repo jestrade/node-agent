@@ -1,16 +1,44 @@
-import { de } from '@faker-js/faker';
-import { prisma } from '../models/prisma.js';
+import { prisma } from "../models/prisma.js";
 
 export class UserService {
-    async getUsers(page = 0, total = 10) {
-        return await prisma.user.findMany({
-            skip: total * page || 0,
-            take: Number(total) || 10,
-            orderBy: {
-                createdAt: 'desc',
-            }
-        });
-    }
+  // CRUD
+  async createUser(email, name) {
+    return await prisma.user.create({
+      data: {
+        email,
+        name,
+      },
+    });
+  }
+
+  async getUsers(page = 0, total = 10) {
+    return await prisma.user.findMany({
+      skip: total * page || 0,
+      take: Number(total) || 10,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
+  async getUserById(id) {
+    return await prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
+  // MORE
+
+  async findInactiveUsers(daysInactive = 7) {
+    const date = new Date(Date.now() - daysInactive * 24 * 60 * 60 * 1000);
+    return await prisma.user.findMany({
+      where: {
+        lastActiveAt: {
+          lt: date,
+        },
+      },
+    });
+  }
 }
 
 export default UserService;

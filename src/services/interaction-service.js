@@ -1,6 +1,7 @@
 import { prisma } from "../models/prisma.js";
 
 export class InteractionService {
+  // CRUD
   async createInteraction(type, payload) {
     return await prisma.interaction.create({
       data: {
@@ -17,6 +18,27 @@ export class InteractionService {
       take: Number(total) || 10,
       orderBy: {
         createdAt: "desc",
+      },
+    });
+  }
+
+  // MORE
+
+  async createReengagementInteraction(userId) {
+    return await prisma.interaction.create({
+      data: {
+        type: "reengagement_sent",
+        userId,
+      },
+    });
+  }
+
+  async createPriceSuggestionInteraction(listingId, suggestedPrice) {
+    return await prisma.interaction.create({
+      data: {
+        type: "price_suggestion",
+        listingId,
+        payload: { suggestion: suggestedPrice },
       },
     });
   }
