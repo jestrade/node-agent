@@ -4,10 +4,16 @@ export class UserService {
   // CRUD
   async createUser(email, name) {
     return await prisma.user.create({
-      data: {
-        email,
-        name,
-      },
+      data: { email, name }
+    });
+  }
+
+  // Upsert a user by email
+  async upsertUser(email, name) {
+    return await prisma.user.upsert({
+      where: { email },
+      update: { lastActiveAt: new Date() },
+      create: { email, name }
     });
   }
 
