@@ -32,30 +32,32 @@ export const webhookController = async (req, res) => {
     }
 
     if (type === "listing.created") {
-      const { id, ownerId, title, price, description = "" } = payload;
-      const listing = await listingService.createListing({
-        id,
-        ownerId,
-        title,
-        price,
-        description,
-      });
+      // Get the listing details from the payload
+      const { id, ownerId, title, price, description = "", photos = [] } = payload;
+      
+      // Get the listing to ensure it exists
+      const listing = await listingService.findById(id);
+      
+      if (!listing) {
+        throw new Error(`Listing with ID ${id} not found`);
+      }
 
-      await interactionService.createListingCreatedInteraction(
-        listing.id,
-        payload
-      );
+      // Create interaction for the listing creation
+      await interactionService.createListingCreatedInteraction(id, payload);
 
-      if (
-        !description ||
-        (payload.photos?.length || 0) < MIN_PHOTOS_FOR_QUALITY
-      ) {
+      // Check if the listing needs improvement
+      if (!description || photos.length < MIN_PHOTOS_FOR_QUALITY) {
         const owner = await userService.getUserById(ownerId);
-        const msg = await generateMessage({
-          purpose: "Suggest improving description and photos",
-          context: { user: owner, listing },
-        });
-        await sendEmail(owner.email, msg.subject, `${msg.body}\n\n${msg.cta}`);
+        if (owner) {
+          const msg = await generateMessage({
+            purpose: "Suggest improving description and photos",
+            context: { 
+              user: owner, 
+              listing: { id, title, price, description, photos } 
+            },
+          });
+          await sendEmail(owner.email, msg.subject, `${msg.body}\n\n${msg.cta}`);
+        }
       }
     }
 
