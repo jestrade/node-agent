@@ -1,48 +1,51 @@
-# Node Agent - Automation System
+# Node Agent - Real Estate Listing Management System
 
-A Node.js microservice for automating listing management and user engagement through intelligent email communications.
+A Node.js microservice for managing real estate listings, user interactions, and automated communications with AI-powered insights.
 
 ## 🚀 Features
 
-- **Automated Email System**
-  - Transactional emails via Gmail SMTP
-  - HTML and plain text support
-  - Email tracking and logging
+- **Listing Management**
+  - Create and manage property listings
+  - Track listing views and engagement
+  - Automated pricing suggestions
+  - Photo management
+
 - **User Management**
   - User CRUD operations
   - Activity monitoring
   - Inactive user detection
-  - Paginated user listings with count
-- **Listing Management**
-  - Property listing creation
-  - Visit tracking
-  - Automated pricing suggestions
+  - Paginated user listings
+
 - **Interaction Tracking**
   - System event logging
   - User engagement tracking
   - Price suggestion history
-  - Paginated interaction logs with count
+  - Webhook integration
+
 - **Intelligent Automation**
   - AI-powered message generation using Google GenAI
   - Smart pricing recommendations
-  - Scheduled re-engagement campaigns
+  - Automated email notifications
+  - Webhook event handling
 
 ## 🛠 Tech Stack
 
 - **Backend**: Node.js, Express
 - **Database**: PostgreSQL with Prisma ORM
 - **Email**: Nodemailer with Gmail
-- **Scheduling**: node-cron
 - **AI**: Google GenAI (Gemini)
-- **API**: RESTful endpoints
+- **API**: RESTful endpoints with JSON:API specification
+- **Authentication**: JWT (JSON Web Tokens)
+- **Validation**: Express Validator
 - **Code Quality**: ESLint, Prettier
+- **Testing**: Jest, Supertest
 
 ## 📋 Prerequisites
 
-- Node.js (v16+)
-- PostgreSQL
-- Gmail account
-- Google GenAI API key
+- Node.js (v18+)
+- PostgreSQL (v14+)
+- Gmail account (for email notifications)
+- Google GenAI API key (for AI features)
 
 ## 🔧 Installation
 
@@ -88,16 +91,158 @@ npx prisma db push
 
 ## 🚦 Usage
 
-Start the development server:
+### Development
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+
+# Start development server with hot-reload
 npm run dev
 ```
 
-Start in production:
+### Production
 
 ```bash
+# Install production dependencies
+npm install --production
+
+# Run database migrations
+npx prisma migrate deploy
+
+# Start production server
 npm start
+```
+
+## 🌐 API Endpoints
+
+### Users
+
+- `POST /users` - Create a new user
+
+  ```json
+  {
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+  ```
+
+  Response (202 Accepted):
+
+  ```json
+  {
+    "ok": true,
+    "message": "User creation request received",
+    "data": {
+      "email": "user@example.com",
+      "name": "John Doe",
+      "id": "user-id-123"
+    }
+  }
+  ```
+
+- `GET /users` - List all users (paginated)
+
+  ```
+  GET /users?page=0&total=10
+  ```
+
+  Response (200 OK):
+
+  ```json
+  {
+    "ok": true,
+    "users": [
+      {
+        "id": "user-id-123",
+        "email": "user1@example.com",
+        "name": "John Doe",
+        "createdAt": "2025-10-23T21:42:00.000Z"
+      },
+      {
+        "id": "user-id-456",
+        "email": "user2@example.com",
+        "name": "Jane Smith",
+        "createdAt": "2025-10-22T15:30:00.000Z"
+      }
+    ],
+    "count": 2
+  }
+  ```
+
+- `GET /users/:id` - Get user by ID
+- `PATCH /users/:id` - Update a user
+- `DELETE /users/:id` - Delete a user
+
+### Listings
+
+- `POST /listings` - Create a new listing
+  ```json
+  {
+    "ownerId": "user-id",
+    "title": "Beautiful Apartment",
+    "price": 150000,
+    "description": "Lovely 2-bedroom apartment",
+    "photos": ["photo1.jpg", "photo2.jpg"]
+  }
+  ```
+
+### Webhooks
+
+- `POST /webhook` - Handle system events
+  ```json
+  {
+    "type": "listing.created",
+    "payload": {
+      "id": "listing-id",
+      "ownerId": "user-id",
+      "title": "Listing Title",
+      "price": 150000,
+      "description": "Listing description",
+      "photos": ["photo1.jpg"]
+    }
+  }
+  ```
+
+## 📝 Environment Variables
+
+| Variable         | Description                  | Required | Default        |
+| ---------------- | ---------------------------- | -------- | -------------- |
+| `PORT`           | Server port                  | No       | 3000           |
+| `DATABASE_URL`   | PostgreSQL connection string | Yes      | -              |
+| `JWT_SECRET`     | Secret for JWT tokens        | Yes      | -              |
+| `GEMINI_API_KEY` | Google GenAI API key         | Yes      | -              |
+| `EMAIL_FROM`     | Sender email address         | Yes      | -              |
+| `EMAIL_USER`     | SMTP username                | Yes      | -              |
+| `EMAIL_PASSWORD` | SMTP password                | Yes      | -              |
+| `EMAIL_HOST`     | SMTP host                    | No       | smtp.gmail.com |
+| `EMAIL_PORT`     | SMTP port                    | No       | 465            |
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ```
 
 ## 📡 API Endpoints
@@ -118,19 +263,21 @@ Supported event types:
 ## 📁 Project Structure
 
 ```
+
 src/
 ├── config/
-│   ├── index.js
-│   └── mailer.js
+│ ├── index.js
+│ └── mailer.js
 ├── models/
-│   └── prisma.js
+│ └── prisma.js
 ├── routes/
-│   └── webhook.js
+│ └── webhook.js
 ├── services/
-│   ├── email-service.js
-│   └── scheduler.js
+│ ├── email-service.js
+│ └── scheduler.js
 └── index.js
-```
+
+````
 
 ## 📊 Database Schema
 
@@ -158,7 +305,7 @@ model Interaction {
   payload   Json?
   // ...
 }
-```
+````
 
 ## 🔍 Monitoring
 
