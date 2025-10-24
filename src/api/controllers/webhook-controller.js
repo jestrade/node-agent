@@ -15,11 +15,18 @@ export const webhookController = async (req, res) => {
   const { type, payload } = req.body;
   try {
     if (type === "user.created") {
-      const user = await userService.upsertUser(payload.email, payload.name);
+      // Get user by email
+      const user = await userService.getUserByEmail(payload.email);
+      
+      if (!user) {
+        throw new Error(`User with email ${payload.email} not found`);
+      }
+
       const msg = await generateMessage({
         purpose: "Help publish the first listing",
         context: { user },
       });
+      
       await sendEmail(user.email, msg.subject, `${msg.body}\n\n${msg.cta}`);
       await interactionService.createUserCreatedInteraction(user.id, payload);
     }

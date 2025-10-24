@@ -37,6 +37,12 @@ export class UserService {
     });
   }
 
+  async getUserByEmail(email) {
+    return await prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
   // MORE
 
   async findInactiveUsers(daysInactive = 7) {
